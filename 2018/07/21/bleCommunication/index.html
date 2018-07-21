@@ -79,21 +79,20 @@
 
 
 
-<meta name="description" content="前言：安卓BLE蓝牙通讯长度被限制为20个byte 1）为什么会是20？core spec里面定义了ATT的默认MTU为23个bytes，除去ATT的opcode一个字节以及ATT的handle2个字节之后，剩下的20个字节便是留给GATT的了 2) 可以超过20吗？当然是可以申请 方案一 :bluetoothGatt里面的requestMtu就是申请包的大小的，然后在MyBluetoothGat">
+<meta name="description" content="前言：安卓BLE蓝牙通讯长度被限制为20个byte 1）为什么会是20？core spec里面定义了ATT的默认MTU为23个bytes，除去ATT的opcode一个字节以及ATT的handle2个字节之后，剩下的20个字节便是留给GATT的了 2) 可以超过20吗？当然是可以申请 方案一bluetoothGatt里面的requestMtu就是申请包的大小的，然后在MyBluetoothGattC">
 <meta property="og:type" content="article">
 <meta property="og:title" content="安卓BLE开发总结二（蓝牙通讯）">
 <meta property="og:url" content="https://wangshuwen1107.github.io/2018/07/21/bleCommunication/index.html">
 <meta property="og:site_name" content="cheney blog">
-<meta property="og:description" content="前言：安卓BLE蓝牙通讯长度被限制为20个byte 1）为什么会是20？core spec里面定义了ATT的默认MTU为23个bytes，除去ATT的opcode一个字节以及ATT的handle2个字节之后，剩下的20个字节便是留给GATT的了 2) 可以超过20吗？当然是可以申请 方案一 :bluetoothGatt里面的requestMtu就是申请包的大小的，然后在MyBluetoothGat">
+<meta property="og:description" content="前言：安卓BLE蓝牙通讯长度被限制为20个byte 1）为什么会是20？core spec里面定义了ATT的默认MTU为23个bytes，除去ATT的opcode一个字节以及ATT的handle2个字节之后，剩下的20个字节便是留给GATT的了 2) 可以超过20吗？当然是可以申请 方案一bluetoothGatt里面的requestMtu就是申请包的大小的，然后在MyBluetoothGattC">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://wangshuwen1107.github.io/2018/07/21/bleCommunication/package.png">
 <meta property="og:image" content="https://wangshuwen1107.github.io/2018/07/21/bleCommunication/shaking.png">
 <meta property="og:image" content="https://wangshuwen1107.github.io/2018/07/21/bleCommunication/bleTalk.png">
-<meta property="og:updated_time" content="2018-07-21T06:17:50.012Z">
+<meta property="og:updated_time" content="2018-07-21T07:58:59.991Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="安卓BLE开发总结二（蓝牙通讯）">
-<meta name="twitter:description" content="前言：安卓BLE蓝牙通讯长度被限制为20个byte 1）为什么会是20？core spec里面定义了ATT的默认MTU为23个bytes，除去ATT的opcode一个字节以及ATT的handle2个字节之后，剩下的20个字节便是留给GATT的了 2) 可以超过20吗？当然是可以申请 方案一 :bluetoothGatt里面的requestMtu就是申请包的大小的，然后在MyBluetoothGat">
-<meta name="twitter:image" content="https://wangshuwen1107.github.io/2018/07/21/bleCommunication/package.png">
+<meta name="twitter:description" content="前言：安卓BLE蓝牙通讯长度被限制为20个byte 1）为什么会是20？core spec里面定义了ATT的默认MTU为23个bytes，除去ATT的opcode一个字节以及ATT的handle2个字节之后，剩下的20个字节便是留给GATT的了 2) 可以超过20吗？当然是可以申请 方案一bluetoothGatt里面的requestMtu就是申请包的大小的，然后在MyBluetoothGattC">
+<meta name="twitter:image" content="https://wangshuwen1107.github.io/2018/07/21/bleCommunication/shaking.png">
 
 
 
@@ -306,12 +305,12 @@
         <p>前言：安卓BLE蓝牙通讯长度被限制为20个byte</p>
 <p>1）为什么会是20？<br>core spec里面定义了ATT的默认MTU为23个bytes，除去ATT的opcode一个字节以及ATT的handle2个字节之后，剩下的20个字节便是留给GATT的了</p>
 <p>2) 可以超过20吗？<br>当然是可以申请</p>
-<p><font size="4"><strong>方案一</strong> </font>:bluetoothGatt里面的requestMtu就是申请包的大小的，<br>然后在MyBluetoothGattCallback里面的onMtuChanged里面看到最终申请的结果，当然你的申请是需要bleServer端允许的</p>
+<h2 id="方案一"><a href="#方案一" class="headerlink" title="方案一"></a>方案一</h2><p>bluetoothGatt里面的requestMtu就是申请包的大小的，<br>然后在MyBluetoothGattCallback里面的onMtuChanged里面看到最终申请的结果，当然你的申请是需要bleServer端允许的</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">requestMtu</span><span class="params">(<span class="keyword">int</span> mtu)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (DBG) Log.d(TAG, <span class="string">"configureMTU() - device: "</span> + mDevice.getAddress()</span><br><span class="line">                            + <span class="string">" mtu: "</span> + mtu);</span><br><span class="line">        <span class="keyword">if</span> (mService == <span class="keyword">null</span> || mClientIf == <span class="number">0</span>) <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            mService.configureMTU(mClientIf, mDevice.getAddress(), mtu);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (RemoteException e) &#123;</span><br><span class="line">            Log.e(TAG,<span class="string">""</span>,e);</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onMtuChanged</span><span class="params">(BluetoothGatt gatt, <span class="keyword">int</span> mtu, <span class="keyword">int</span> status)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">super</span>.onMtuChanged(gatt, mtu, status);</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">if</span> (status == BluetoothGatt.GATT_SUCCESS) &#123;</span><br><span class="line">        <span class="keyword">this</span>.supportedMTU = mtu;<span class="comment">//local var to record MTU size</span></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<p><font size="4"><strong>方案二:</strong> </font>自己规定蓝牙通讯业务协议，实现分包重组功能，介绍一下自己的解决方案</p>
-<p>###1. 20个byte的分配：<br><img src="package.png" alt=""></p>
+<h2 id="方案二"><a href="#方案二" class="headerlink" title="方案二"></a>方案二</h2><p>自己规定蓝牙通讯业务协议，实现分包重组功能，介绍一下自己的解决方案</p>
+<h3 id="1-20个byte的分配："><a href="#1-20个byte的分配：" class="headerlink" title="1. 20个byte的分配："></a>1. 20个byte的分配：</h3><p>i<a href="/package.png">package</a></p>
 <hr>
-<h4 id="byte说明"><a href="#byte说明" class="headerlink" title="byte说明"></a>byte说明</h4><table>
+<h3 id="2-byte说明"><a href="#2-byte说明" class="headerlink" title="2.byte说明"></a>2.byte说明</h3><table>
 <thead>
 <tr>
 <th>byte</th>
@@ -338,12 +337,12 @@
 </tbody>
 </table>
 <hr>
-<h3 id="2-shakingHands："><a href="#2-shakingHands：" class="headerlink" title="2. shakingHands："></a>2. shakingHands：</h3><p>为了协议安全起见，bleClient和bleServer端通讯需要加上握手来表示大家相互信任，当然握手的包尽量限制在20个byte内</p>
-<h4 id="列-8个byte-："><a href="#列-8个byte-：" class="headerlink" title="列(8个byte)："></a>列(8个byte)：</h4><p><img src="shaking.png" alt=""><br>bleClient:</p>
+<h3 id="3-shakingHands："><a href="#3-shakingHands：" class="headerlink" title="3. shakingHands："></a>3. shakingHands：</h3><p>为了协议安全起见，bleClient和bleServer端通讯需要加上握手来表示大家相互信任，当然握手的包尽量限制在20个byte内</p>
+<h3 id="4-例-8个byte-："><a href="#4-例-8个byte-：" class="headerlink" title="4.例(8个byte)："></a>4.例(8个byte)：</h3><p><img src="shaking.png" alt=""><br>bleClient:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">RK 2 00000</span><br></pre></td></tr></table></figure>
 <p>bleServer：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">RK 2 00000</span><br></pre></td></tr></table></figure>
-<h3 id="3-流程图"><a href="#3-流程图" class="headerlink" title="3.流程图"></a>3.流程图</h3><p><img src="bleTalk.png" alt=""></p>
+<h3 id="5-流程图"><a href="#5-流程图" class="headerlink" title="5.流程图"></a>5.流程图</h3><p><img src="bleTalk.png" alt=""></p>
 
       
     </div>
@@ -490,7 +489,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#byte说明"><span class="nav-number">1.</span> <span class="nav-text">byte说明</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-shakingHands："><span class="nav-number"></span> <span class="nav-text">2. shakingHands：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#列-8个byte-："><span class="nav-number">1.</span> <span class="nav-text">列(8个byte)：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-流程图"><span class="nav-number"></span> <span class="nav-text">3.流程图</span></a></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#方案一"><span class="nav-number">1.</span> <span class="nav-text">方案一</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#方案二"><span class="nav-number">2.</span> <span class="nav-text">方案二</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-20个byte的分配："><span class="nav-number">2.1.</span> <span class="nav-text">1. 20个byte的分配：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-byte说明"><span class="nav-number">2.2.</span> <span class="nav-text">2.byte说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-shakingHands："><span class="nav-number">2.3.</span> <span class="nav-text">3. shakingHands：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-例-8个byte-："><span class="nav-number">2.4.</span> <span class="nav-text">4.例(8个byte)：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-流程图"><span class="nav-number">2.5.</span> <span class="nav-text">5.流程图</span></a></li></ol></li></ol></div>
             
 
           </div>
