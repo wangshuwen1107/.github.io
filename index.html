@@ -232,6 +232,258 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://wangshuwen1107.github.io/2018/09/05/permission/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王老师">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cheney blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/09/05/permission/" itemprop="url">安卓动态权限AOP</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-05T10:47:12+08:00">
+                2018-09-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="一-背景"><a href="#一-背景" class="headerlink" title="[一] 背景"></a>[一] 背景</h3><p>这篇博客的缘由是因为最近发现项目的targetSDK 22，很多检验权限的方法都是错误的，于是将targetSDK升到了26发现了很多需要申请权限的地方，代码逻辑上又显得很繁琐。</p>
+<h4 id="二-解决问题："><a href="#二-解决问题：" class="headerlink" title="[二] 解决问题："></a>[二] 解决问题：</h4><p>1、支持单个权限、多个权限申请<br>2、运行时申请<br>3、让申请权限代码共同化<br>4、支持在任何类中去申请权限</p>
+<p>示意图:<br><img src="/2018/09/05/permission/requestPermission.png"></p>
+<h4 id="三-介绍一下AOP概念"><a href="#三-介绍一下AOP概念" class="headerlink" title="[三]介绍一下AOP概念"></a>[三]介绍一下AOP概念</h4><p>Aspect，切面，一个关注点的模块化，这个关注点可能会横切多个对象。</p>
+<p>JoinPoint，连接点，在程序执行过程中某个特定的点，比如某方法调用的时候或者处理异常的时候。在Spring AOP中，一个连接点总是表示一个方法的执行。</p>
+<p>Advice，通知，在切面的某个特定的连接点上执行的动作。</p>
+<p>Pointcut，切点，匹配连接点的断言。通知和一个切入点表达式关联，并在满足这个切入点的连接点上运行（例如，当执行某个特定名称的方法时）。切入点表达式如何和连接点匹配是AOP的核心：Spring缺省使用AspectJ切入点语法。</p>
+<h4 id="四-代码UML图"><a href="#四-代码UML图" class="headerlink" title="[四]代码UML图"></a>[四]代码UML图</h4><img src="/2018/09/05/permission/uml.png">
+<h4 id="五-如何使用AOP"><a href="#五-如何使用AOP" class="headerlink" title="[五]如何使用AOP"></a>[五]如何使用AOP</h4><p>1.在app的build.gradle中添加<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">apply plugin: <span class="string">'com.hujiang.android-aspectjx'</span></span><br><span class="line"></span><br><span class="line">dependencies &#123;</span><br><span class="line">    compile <span class="string">'org.aspectj:aspectjrt:1.8.9'</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>2.在更项目中的build.gradle中添加<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">buildscript &#123;</span><br><span class="line">    repositories &#123;</span><br><span class="line">        google()</span><br><span class="line">        jcenter()</span><br><span class="line">    &#125;</span><br><span class="line">    dependencies &#123;</span><br><span class="line">        classpath <span class="string">'com.android.tools.build:gradle:2.3.0'</span></span><br><span class="line">        classpath <span class="string">'com.hujiang.aspectjx:gradle-android-plugin-aspectjx:1.0.8'</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="六-申请权限代码实例"><a href="#六-申请权限代码实例" class="headerlink" title="[六]申请权限代码实例"></a>[六]申请权限代码实例</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@NeedPermission</span>(value = &#123;</span><br><span class="line">        <span class="string">"android.permission.BLUETOOTH"</span>,</span><br><span class="line">        <span class="string">"android.permission.BLUETOOTH_ADMIN"</span>,</span><br><span class="line">        <span class="string">"android.permission.ACCESS_COARSE_LOCATION"</span>,</span><br><span class="line">        <span class="string">"android.permission.ACCESS_FINE_LOCATION"</span>&#125;, requestCode = <span class="number">1</span>)</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onNeed</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Log.i(TAG, <span class="string">"Access permissions  is called ---"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@PermissionDenied</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onDenied</span><span class="params">(PermissionDenyBean bean )</span></span>&#123;</span><br><span class="line">    Log.e(TAG, <span class="string">"onDenied:  is called --- "</span>+bean);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@PermissionCanceled</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCancel</span><span class="params">(<span class="keyword">int</span> requestCode)</span></span>&#123;</span><br><span class="line">    Log.e(TAG, <span class="string">"onCancel:  is called --- "</span>+requestCode);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="七-代码实现"><a href="#七-代码实现" class="headerlink" title="[七]代码实现"></a>[七]代码实现</h4><p><a href="https://github.com/wangshuwen1107/aopPermission.git" target="_blank" rel="noopener">gitthub代码地址</a></p>
+<h4 id="八-关于aop的过滤扫描详细配置"><a href="#八-关于aop的过滤扫描详细配置" class="headerlink" title="[八]关于aop的过滤扫描详细配置"></a>[八]关于aop的过滤扫描详细配置</h4><p><a href="http://dijun.me/2018/05/04/AspectJX-%E7%9A%84%E4%BD%BF%E7%94%A8/" target="_blank" rel="noopener">详细配置</a></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://wangshuwen1107.github.io/2018/07/23/httpRequest/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王老师">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cheney blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/07/23/httpRequest/" itemprop="url">httpRequest</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-23T20:34:50+08:00">
+                2018-07-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>okHttp 是移动端常用的网络框架，如何去优雅的封装，每个开发者都有自己的想法，下面介绍一下我的封装思想</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://wangshuwen1107.github.io/2018/07/21/bleCommunication/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -559,7 +811,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-count">4</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
